@@ -1,3 +1,3 @@
-module.exports = (app, io) => {
+module.exports = (app, io, memStore) => {
   
 }

@@ -1,6 +1,19 @@
 import React, {useEffect} from 'react';
+import SocketIOClient from 'socket.io-client';
 
 const App = () => {
+
+  useEffect(() => {
+    const {protocol, hostname} = window.location;
+    const serverAddr = protocol + '//' + hostname + ':5000' + '/webcam';
+    const socket = SocketIOClient(serverAddr, {
+      perMessageDeflate: false
+    })
+
+    socket.on('connect', () => {
+      socket.emit('clientReady');
+    });
+  }, [])
 
   useEffect(() => {
     const video = document.getElementById('video');

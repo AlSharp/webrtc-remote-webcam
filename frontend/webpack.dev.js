@@ -14,8 +14,8 @@ module.exports = (env, argv) => {
       host: '0.0.0.0',
       disableHostCheck: true,
       https: true,
-      key: fs.readFileSync(__dirname + '/dev_cert_keys/server.key'),
-      cert: fs.readFileSync(__dirname + '/dev_cert_keys/server.crt')
+      key: fs.readFileSync(path.join(__dirname, '..', 'dev_cert_keys/server.key')),
+      cert: fs.readFileSync(path.join(__dirname, '..', 'dev_cert_keys/server.crt'))
     },
     output: {
       publicPath: "/"

@@ -1,4 +1,5 @@
 node_modules
 frontend/node_modules
-frontend/dev_cert_keys
+dev_cert_keys
 build
+config.js
