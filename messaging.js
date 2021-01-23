@@ -1,10 +1,19 @@
 module.exports = (io, memStore) => {
-  io.of('webcam').on('connect', socket => {
-    console.log('socket id', socket.id, 'connected');
-    memStore.socketId = socket.id;
+  io.of('ws').on('connect', (socket) => {
+    const {client} = socket.handshake.query;
+    memStore[`${client}Socket`] = socket;
+    console.log(`${client} socket with id ${socket.id} connected`);
 
-    socket.on('clientReady', () => {
-      console.log('creating video stream...');
-    })
+    if (client === 'viewer') {
+      socket.on('viewerReady', () => {
+        console.log('creating video stream...');
+      })
+    }
+
+    if (client === 'webcam') {
+      socket.on('webcamReady', () => {
+        console.log('webcam ready');
+      })
+    }
   })
 }

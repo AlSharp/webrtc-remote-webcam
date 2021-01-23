@@ -1,5 +1,7 @@
 node_modules
-frontend/node_modules
+viewer/node_modules
+webcam/node_modules
 dev_cert_keys
-build
+viewer_build
+webcam_build
 config.js

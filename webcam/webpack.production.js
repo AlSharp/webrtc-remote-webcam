@@ -7,8 +7,8 @@ module.exports = (env, argv) => {
   return merge(common, {
     mode: "production",
     output: {
-      publicPath: "/",
-      path: path.join(__dirname, '..', 'build')
+      publicPath: "/webcam",
+      path: path.join(__dirname, '..', 'webcam_build')
     },
     plugins: [
       new DefinePlugin({

@@ -8,7 +8,7 @@ const app = express();
 const server = require('https').createServer({key, cert}, app);
 const io = require('socket.io')(server, {
   pingInterval: 5000,
-  pingTimeout: 3000,
+  pingTimeout: 10000,
   perMessageDeflate: false
 });
 const { ExpressPeerServer } = require('peer');
@@ -29,7 +29,8 @@ const {
 const PORT = 5000;
 
 const memStore = {
-  socketId: null
+  webcamSocket: null,
+  viewerSocket: null
 }
 
 const corsOptions = {
@@ -48,8 +49,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(peerServer);
-
-app.use(express.static(path.join(__dirname, 'build')));
 
 require('./messaging')(io, memStore);
 require('./routing')(app, io, memStore);
