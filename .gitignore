@@ -5,3 +5,4 @@ dev_cert_keys
 viewer_build
 webcam_build
 config.js
+.env

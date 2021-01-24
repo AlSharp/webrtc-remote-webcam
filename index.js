@@ -1,3 +1,4 @@
+require('dotenv').config();
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
@@ -16,10 +17,32 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+const memStore = {
+  viewerSocket: null,
+  webcamLive: false
+}
+
+const Webcam = require('./webcam');
+
+const webcam = new Webcam();
+
 const peerServer = ExpressPeerServer(server, {
   proxied: true,
   debug: true,
   path: '/peer'
+});
+
+peerServer.on('connection', client => {
+  console.log(`${client.id} connected`);
+});
+
+peerServer.on('disconnect', async client => {
+  console.log(`${client.id} disconnected`);
+  if (client.id === 'viewer' && memStore.webcamLive) {
+    console.log('stop webcam');
+    await webcam.stop();
+    memStore.webcamLive = false;
+  }
 });
 
 const {
@@ -27,11 +50,6 @@ const {
 } = require('./config');
 
 const PORT = 5000;
-
-const memStore = {
-  webcamSocket: null,
-  viewerSocket: null
-}
 
 const corsOptions = {
   credentials: true,
@@ -50,8 +68,8 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(peerServer);
 
-require('./messaging')(io, memStore);
-require('./routing')(app, io, memStore);
+require('./messaging')(io, webcam, memStore);
+require('./routing')(app, io, webcam, memStore);
 
 server.listen(PORT, () =>
   console.log(`Server is listening at port https://${os.hostname}:${PORT}`)

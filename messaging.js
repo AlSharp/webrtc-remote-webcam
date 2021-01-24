@@ -1,19 +1,18 @@
-module.exports = (io, memStore) => {
-  io.of('ws').on('connect', (socket) => {
-    const {client} = socket.handshake.query;
-    memStore[`${client}Socket`] = socket;
-    console.log(`${client} socket with id ${socket.id} connected`);
+module.exports = (io, webcam, memStore) => {
+  io.of('ws').on('connect', socket => {
+    memStore.viewerSocket = socket;
+    console.log(`Viewer socket with id ${socket.id} connected`);
 
-    if (client === 'viewer') {
-      socket.on('viewerReady', () => {
+    socket.on('viewerReady', async () => {
+      if (!memStore.webcamLive) {
         console.log('creating video stream...');
-      })
-    }
-
-    if (client === 'webcam') {
-      socket.on('webcamReady', () => {
-        console.log('webcam ready');
-      })
-    }
+        await webcam.start();
+        memStore.webcamLive = true;
+        console.log('video stream was created');
+      } else {
+        console.log('webcam is already live. Will restart it');
+        await webcam.restart();
+      }
+    })
   })
 }

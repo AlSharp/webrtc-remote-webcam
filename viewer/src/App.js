@@ -8,10 +8,7 @@ const App = () => {
     const {protocol, hostname} = window.location;
     const serverAddr = protocol + '//' + hostname + ':5000' + '/ws';
     const socket = SocketIOClient(serverAddr, {
-      perMessageDeflate: false,
-      query: {
-        client: 'viewer'
-      }
+      perMessageDeflate: false
     })
 
     socket.on('connect', () => {
@@ -25,30 +22,34 @@ const App = () => {
       port: 5000,
       path: '/peer',
       secure: true,
-      debug: 3
+      debug: 0
     })
 
     peer.on('open', id => {
-      window.navigator.mediaDevices.getUserMedia({video: true, audio: false})
-        .then(stream => {
-          const call = peer.call('webcam', stream);
-          call.on('stream', remoteStream => {
-            const video = document.getElementById('video');
-            video.srcObject = remoteStream;
-            video.play();
-          })
-        })
-        .catch(error => {
-          console.log('Error: ', error);
-        })
-    })
+      console.log('my peer id is ', id)
+    });
+
+    peer.on('call', call => {
+      call.answer();
+      call.on('stream', remoteStream => {
+        const video = document.getElementById('video');
+        video.srcObject = remoteStream;
+        video.play();
+      })
+    });
+
+    peer.on('close', () => console.log('peer is destroyed'));
+
+    peer.on('disconnected', () => console.log('peer is disconnected'));
+
+    peer.on('error', error => console.log('peer error: ', error));
   }, [])
 
   return(
     <div className="App">
       <h1>Remote Webcam Viewer</h1>
       <div className="camera">
-        <video id="video">Video stream is not available.</video>
+        <video id="video" muted="muted">Video stream is not available.</video>
       </div>
     </div>
   )
